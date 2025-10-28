@@ -25,12 +25,47 @@ export async function pbkdf2Bits(password, salt, iterations=150000){
 
 export function randomBytes(n){ const u = new Uint8Array(n); crypto.getRandomValues(u); return u; }
 
-export async function aesGcmEncryptJSON(obj, key){
-    const ivB = ub64(iv); const ctB = ub64(ciphertext);
-    const pt = await crypto.subtle.decrypt({name:'AES-GCM', iv: ivB}, key, ctB);
-    return JSON.parse(dec.decode(pt));
+// Encrypt a JS object with AES-GCM and return base64 { iv, ciphertext }
+export async function aesGcmEncryptJSON(obj, key) {
+    // make a fresh random IV for this encryption
+    const iv = randomBytes(12);
+
+    // encode the object to bytes
+    const plaintextBytes = enc.encode(JSON.stringify(obj));
+
+    // run AES-GCM
+    const ciphertextBuf = await crypto.subtle.encrypt(
+        { name: "AES-GCM", iv },
+        key,
+        plaintextBytes
+    );
+
+    // convert results to base64 so we can store/send as text
+    return {
+        iv: b64(iv),
+        ciphertext: b64(new Uint8Array(ciphertextBuf))
+    };
 }
 
+// Decrypt { iv, ciphertext } with AES-GCM and parse back to JS object
+export async function aesGcmDecryptJSON(encrypted, key) {
+    const { iv, ciphertext } = encrypted;
+
+    // convert base64 -> Uint8Array
+    const ivBytes = ub64(iv);
+    const ctBytes = ub64(ciphertext);
+
+    // decrypt
+    const plaintextBuf = await crypto.subtle.decrypt(
+        { name: "AES-GCM", iv: ivBytes },
+        key,
+        ctBytes
+    );
+
+    // decode bytes -> string -> object
+    const jsonStr = dec.decode(plaintextBuf);
+    return JSON.parse(jsonStr);
+}
 
 export async function aesGcmEncryptBytes(bytes, key){
     const iv = randomBytes(12);
@@ -122,4 +157,5 @@ export function download(filename, bytes){
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
     URL.revokeObjectURL(url);
+
 }
