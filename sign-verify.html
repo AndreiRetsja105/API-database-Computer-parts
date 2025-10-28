@@ -1,0 +1,91 @@
+// FILE: /sign-verify.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Sign & Verify</title>
+	<link rel="stylesheet" href="css/style.css" />
+	<link rel="stylesheet" href="css/style2.css" />
+	<link rel="stylesheet" href="css/style3.css" />
+</head>
+<body>
+	<nav><a href="./index.html">Home</a> · <a href="./password-manager.html">Password Manager</a> · <a href="./secure-storage.html">Secure Storage</a> · <a href="./sign-verify.html">Sign/Verify</a></nav>
+	<main>
+		<h1>Document Signing (ECDSA P-256 / SHA-256)</h1>
+
+		<section>
+			<h2>Generate / Import Keys</h2>
+			<button id="gen">Generate Keypair</button>
+			<button id="export">Export Keys</button>
+			<input type="file" id="privIn" accept=".pk8" />
+			<input type="file" id="pubIn" accept=".spki" />
+			<pre id="sv-log"></pre>
+		</section>
+
+		<section>
+			<h2>Sign a File</h2>
+			<input type="file" id="fileToSign" />
+			<button id="sign">Sign</button>
+		</section>
+
+		<section>
+			<h2>Verify a File</h2>
+			<input type="file" id="fileToVerify" />
+			<input type="file" id="sigFile" accept=".sig" />
+			<button id="verify">Verify</button>
+			<p id="verifyOut"></p>
+		</section>
+	</main>
+
+	<script type="module">
+	import { enc, b64, ub64, genEcdsaKeyPair, ecdsaSign, ecdsaVerify, exportSpki, exportPkcs8, importSpki, importPkcs8, download } from './js/crypto-utils.js';
+
+	let priv = null, pub = null;
+
+	const log = msg => document.getElementById('sv-log').textContent += `\n${msg}`;
+
+	document.getElementById('gen').addEventListener('click', async ()=>{
+		({ publicKey: pub, privateKey: priv } = await genEcdsaKeyPair());
+		log('Generated ECDSA P-256 keypair.');
+	});
+
+	document.getElementById('export').addEventListener('click', async ()=>{
+		if(!priv||!pub){ log('No keys to export.'); return; }
+		const spki = await exportSpki(pub); download('public.spki', spki);
+		const pk8 = await exportPkcs8(priv); download('private.pk8', pk8);
+		log('Exported public.spki and private.pk8');
+	});
+
+	document.getElementById('privIn').addEventListener('change', async (e)=>{
+		const f = e.target.files[0]; if(!f) return; const buf = new Uint8Array(await f.arrayBuffer());
+		priv = await importPkcs8(buf); log('Imported private key');
+	});
+
+	document.getElementById('pubIn').addEventListener('change', async (e)=>{
+		const f = e.target.files[0]; if(!f) return; const buf = new Uint8Array(await f.arrayBuffer());
+		pub = await importSpki(buf); log('Imported public key');
+	});
+
+	document.getElementById('sign').addEventListener('click', async ()=>{
+		if(!priv){ alert('Import or generate a private key first.'); return; }
+		const f = document.getElementById('fileToSign').files[0]; if(!f){ alert('Pick a file'); return; }
+		const data = new Uint8Array(await f.arrayBuffer());
+		const sig = await ecdsaSign(priv, data);
+		download(`${f.name}.sig`, sig);
+		log(`Signed ${f.name} → ${f.name}.sig`);
+	});
+
+	document.getElementById('verify').addEventListener('click', async ()=>{
+		if(!pub){ alert('Import a public key (.spki)'); return; }
+		const f = document.getElementById('fileToVerify').files[0];
+		const sf = document.getElementById('sigFile').files[0];
+		if(!f||!sf){ alert('Pick file and signature'); return; }
+		const data = new Uint8Array(await f.arrayBuffer());
+		const sig = new Uint8Array(await sf.arrayBuffer());
+		const ok = await ecdsaVerify(pub, data, sig);
+		document.getElementById('verifyOut').textContent = ok ? '✅ Signature valid' : '❌ Signature invalid';
+	});
+	</script>
+</body>
+</html>

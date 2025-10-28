@@ -1,0 +1,115 @@
+// FILE: /secure-storage.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Secure Storage</title>
+	<link rel="stylesheet" href="css/style.css" />
+	<link rel="stylesheet" href="css/style2.css" />
+	<link rel="stylesheet" href="css/style3.css" />
+</head>
+<body>
+	<div class="container1">
+	<section>
+		<h1>Secure Cloud Storage (Client-side Encryption)</h1>
+		<h2>Encrypt & Download .secure</h2>
+		<input type="password" id="ss-password" placeholder="Password for encryption" />
+		<input type="file" id="ss-file" />
+		<button id="ss-encrypt">Encrypt</button>
+		<pre id="ss-log"></pre>
+	</section>
+
+	<section>
+		<h2>Import & Decrypt .secure</h2>
+		<input type="password" id="ss-password-dec" placeholder="Password for decryption" />
+		<input type="file" id="ss-secure" accept=".secure" />
+		<button id="ss-decrypt">Decrypt</button>
+		<div id="ss-output"></div>
+	</section>	
+	
+		<nav>
+			<div class="logo">
+				<p>Computer Components API</p>
+			</div>
+			<ul>
+				<li><a href="index.html">Main Page</a></li>
+				<li><a href="./password-manager.html">Password Manager</a></li>
+				<li><a href="./secure-storage.html">Secure Storage</a></li>
+				<li><a href="./sign-verify.html">Sign/Verify</a></li>
+				<li><a href="ComputerComponentLIst.html">Computer Component List</a></li>
+				<li><a href="ChartForJason.html">Chart Bar chart</a></li>
+			</ul>
+		</nav>
+	</div>
+	<main>
+	</main>
+
+	<script type="module">
+		import { b64, ub64, enc, randomBytes, deriveEncAndMac, aesGcmEncryptBytes, aesGcmDecryptBytes, exportRawKey, importRawAesKey, concatBytes, hmac, hmacVerify, download } from './js/crypto-utils.js';
+
+		function log(msg){ const el = document.getElementById('ss-log'); el.textContent += `\n${msg}`; }
+		
+		document.getElementById('ss-encrypt').addEventListener('click', async ()=>{
+			const pw = document.getElementById('ss-password').value; const file = document.getElementById('ss-file').files[0];
+			if(!pw||!file){ log('Password and file required.'); return; }
+			const salt = randomBytes(16);
+			const { aesKey, macKey } = await deriveEncAndMac(pw, salt);
+
+
+			const fileKey = await crypto.subtle.generateKey({name:'AES-GCM', length:256}, true, ['encrypt','decrypt']);
+			const rawFileKey = await exportRawKey(fileKey);
+
+
+			const buf = new Uint8Array(await file.arrayBuffer());
+			const { iv, ciphertext } = await aesGcmEncryptBytes(buf, fileKey);
+
+
+			// Envelope: encrypt file key with user AES key
+			const encKey = await aesGcmEncryptBytes(rawFileKey, aesKey);
+
+
+			// HMAC over version|salt|iv|ciphertext|key_iv|key_ct
+			const toMac = concatBytes(enc.encode('v1'), salt, iv, ciphertext, encKey.iv, encKey.ciphertext);
+			const tag = await hmac(macKey, toMac);
+
+
+			const pkg = {
+			v:'1',
+			name: file.name,
+			mime: file.type,
+			salt: b64(salt),
+			iv: b64(iv),
+			ciphertext: b64(ciphertext),
+			key_iv: b64(encKey.iv),
+			key_ct: b64(encKey.ciphertext),
+			hmac: b64(tag)
+			};
+			const bytes = enc.encode(JSON.stringify(pkg));
+			download(`${file.name}.secure`, bytes);
+			log(`Encrypted ${file.name} → ${file.name}.secure`);
+		});
+
+
+		document.getElementById('ss-decrypt').addEventListener('click', async ()=>{
+			const pw = document.getElementById('ss-password-dec').value; const f = document.getElementById('ss-secure').files[0];
+			if(!pw||!f){ alert('Password and .secure file required'); return; }
+			const text = await f.text();
+			const pkg = JSON.parse(text);
+			const salt = ub64(pkg.salt), iv = ub64(pkg.iv), ct = ub64(pkg.ciphertext), kiv = ub64(pkg.key_iv), kct = ub64(pkg.key_ct);
+			const { aesKey, macKey } = await deriveEncAndMac(pw, salt);
+			const toMac = concatBytes(enc.encode('v1'), salt, iv, ct, kiv, kct);
+			const ok = await hmacVerify(macKey, toMac, ub64(pkg.hmac));
+			if(!ok){ alert('Integrity check failed (bad password or tampered file)'); return; }
+			// Decrypt file key
+			const rawFileKey = await aesGcmDecryptBytes(kiv, kct, aesKey);
+			const fileKey = await importRawAesKey(rawFileKey);
+			const pt = await aesGcmDecryptBytes(iv, ct, fileKey);
+			const blob = new Blob([pt], {type: pkg.mime||'application/octet-stream'});
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement('a'); a.href = url; a.download = pkg.name || 'decrypted.bin'; a.click(); URL.revokeObjectURL(url);
+			document.getElementById('ss-output').textContent = `Decrypted: ${pkg.name || 'file'}`;
+		});
+	</script>
+</body>
+</html>

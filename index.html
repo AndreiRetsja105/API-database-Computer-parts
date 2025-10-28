@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computer Components API</title>
+	<link rel="stylesheet" href="css/style2.css">
+</head>
+<body>
+  <main>
+    <div class="container1">
+      <nav>
+        <div class="logo">
+          <p>COMPUTER COMPONENTS API</p>
+        </div>
+        <ul>
+          <li><a href="index.html">MAIN PAGE</a></li>
+          <li><a href="password-manager.html">PASSWORD MANAGER</a></li>
+          <li><a href="secure-storage.html">SECURE STORAGE</a></li>
+          <li><a href="sign-verify.html">SIGN/VERIFY</a></li>
+          <li><a href="ComputerComponentLIst.html">COMPUTER COMPONENT LIST</a></li>
+          <li><a href="ChartForJason.html">CHART BAR CHART</a></li>
+        </ul>
+
+        <div class="container">
+          <form action="https://www.bing.com/search," method="get" class="search-bar" target="_blank">
+            <input type="hidden" name="q" value="https://andreiretsja104.github.io/APIOfComputerParts/">
+            <input type="text" id="search-bar" name="query" placeholder="Search...">
+            <button type="submit"><img src="images/search.png" alt="Search"></button>
+          </form>
+        </div>
+      </nav>
+    </div>
+
+    <div class="pm-wrapper">
+      <h1 class="pm-title">Password Manager</h1>
+
+      <section id="auth" class="pm-card">
+        <h2>Register / Login</h2>
+        <div class="pm-row">
+          <input id="pm-username" placeholder="Username" class="pm-input" />
+          <input id="pm-password" placeholder="Master Password" type="password" class="pm-input" />
+          <button id="pm-register" class="pm-btn pm-btn-green">Register</button>
+          <button id="pm-login" class="pm-btn pm-btn-blue">Login</button>
+        </div>
+        <p id="pm-auth-msg" class="pm-msg"></p>
+      </section>
+
+      <section id="vault" class="pm-card" style="display:none">
+        <div class="pm-header-row">
+          <h2>Your Vault</h2>
+          <div class="pm-header-actions">
+            <button id="pm-lock" class="pm-btn pm-btn-red">Lock</button>
+            <button id="pm-add" class="pm-btn pm-btn-green">Add Entry</button>
+          </div>
+        </div>
+
+        <table id="pm-table" class="pm-table">
+          <thead>
+            <tr>
+              <th>Site</th>
+              <th>Username</th>
+              <th>Password</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </div>
+  </main>
+
+  <!-- your script type="module" block with pbkdf2/aesGcm/etc goes here -->
+
+</body>
+</html>

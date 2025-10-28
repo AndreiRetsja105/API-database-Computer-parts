@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computer Parts API</title>
+    <link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" href="css/style2.css">
+	
+
+</head>
+<body>
+    <div class="container4">
+        <nav>
+        <div class= "logo">
+		  <p>Computer Parts API</p>
+		</div>
+		<ul>
+		<li><a href="index.html">Main Page</a></li>
+		<li><a href="ComputerComponentLIst.html">Computer Component List</a></li>
+		<li><a href="ChartForJason.html">Chart Bar chart</a></li>
+		<li><a href="data/data.xml">XML</a></li>
+		<li><a href="ImportJson.html">Add Data</a></li>
+		</ul>
+    </nav>
+</body>
+<body>		
+        <div id="app">
+            <h1>Computer Parts List</h1>
+            <div class="search-container">
+                <label for="type">Type:</label>
+                <input type="text" id="type-input" placeholder="Enter Type">
+                <label for="manufacturer">Manufacturer:</label>
+                <input type="text" id="manufacturer-input" placeholder="Enter Manufacturer">
+                <label for="price">Price:</label>
+                <select id="price-input">
+                    <option value="">Any Price</option>
+                    <option value="0-100">0 - 100</option>
+                    <option value="100-250">100 - 250</option>
+                    <option value="250-500">250 - 500</option>
+                    <option value="500-750">500 - 750</option>
+                    <option value="750-1000">750 - 1000</option>
+                    <!-- Add more options as needed -->
+                </select>
+
+                <button onclick="performSearch()">Search</button>
+            </div>
+
+            <div id="computer-parts-info-json">
+                <!-- Computer parts will be dynamically added here -->
+            </div>
+            <div id="computer-parts-info-xml">
+                <!-- Computer parts will be dynamically added here -->
+            </div>
+        </div>
+    </div>
+	 <!-- The D3.js library from its official website. This library provides a powerful set of tools for creating interactive data visualizations -->
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
