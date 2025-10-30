@@ -1,42 +1,81 @@
-// FILE: /sign-verify.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Sign & Verify</title>
-	<link rel="stylesheet" href="css/style.css" />
-	<link rel="stylesheet" href="css/style2.css" />
-	<link rel="stylesheet" href="css/style3.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign & Verify</title>
+  <link rel="stylesheet" href="css/Sign&Verify.css" />
 </head>
 <body>
-	<nav><a href="./index.html">Home</a> · <a href="./password-manager.html">Password Manager</a> · <a href="./secure-storage.html">Secure Storage</a> · <a href="./sign-verify.html">Sign/Verify</a></nav>
-	<main>
-		<h1>Document Signing (ECDSA P-256 / SHA-256)</h1>
+  <div class="container1">
+    <nav>
+      <div class="logo">
+        <a href="index.html">Computer Components API</a>
+      </div>
+      <ul>
+        <li><a href="./secure-storage.html">Secure Storage</a></li>
+        <li><a href="ComputerComponentLIst.html">Computer Component List</a></li>
+        <li><a href="ChartForJason.html">Chart Bar chart</a></li>
+      </ul>
+    </nav>
+  </div>
 
-		<section>
-			<h2>Generate / Import Keys</h2>
-			<button id="gen">Generate Keypair</button>
-			<button id="export">Export Keys</button>
-			<input type="file" id="privIn" accept=".pk8" />
-			<input type="file" id="pubIn" accept=".spki" />
-			<pre id="sv-log"></pre>
-		</section>
+  <main class="shell">
+    <h1 class="page-title">Document Signing <span class="tag">ECDSA P-256 / SHA-256</span></h1>
 
-		<section>
-			<h2>Sign a File</h2>
-			<input type="file" id="fileToSign" />
-			<button id="sign">Sign</button>
-		</section>
+    <div class="grid-2">
+      <!-- LEFT CARD: Keys -->
+      <section class="card">
+        <h2 class="card-title">Generate / Import Keys</h2>
 
-		<section>
-			<h2>Verify a File</h2>
-			<input type="file" id="fileToVerify" />
-			<input type="file" id="sigFile" accept=".sig" />
-			<button id="verify">Verify</button>
-			<p id="verifyOut"></p>
-		</section>
-	</main>
+        <div class="row actions">
+          <button id="gen" class="btn btn-green">Generate keypair</button>
+          <button id="export" class="btn btn-blue">Export keys</button>
+        </div>
+
+        <div class="row">
+          <label class="label">Import Private Key (.pk8)</label>
+          <input type="file" id="privIn" accept=".pk8" class="input input-file" />
+        </div>
+
+        <div class="row">
+          <label class="label">Import Public Key (.spki)</label>
+          <input type="file" id="pubIn" accept=".spki" class="input input-file" />
+        </div>
+
+        <div id="sv-log" class="result-box" aria-live="polite"></div>
+      </section>
+
+      <!-- RIGHT CARD: Sign & Verify -->
+      <section class="card">
+        <h2 class="card-title">Sign & Verify</h2>
+
+        <div class="row">
+          <label class="label">File to sign</label>
+          <input type="file" id="fileToSign" class="input input-file" />
+          <button id="sign" class="btn btn-indigo">Sign</button>
+        </div>
+
+        <hr class="divider" />
+
+        <div class="row">
+          <label class="label">File to verify</label>
+          <input type="file" id="fileToVerify" class="input input-file" />
+        </div>
+
+        <div class="row">
+          <label class="label">Signature file (.sig)</label>
+          <input type="file" id="sigFile" accept=".sig" class="input input-file" />
+        </div>
+
+        <div class="row actions">
+          <button id="verify" class="btn btn-purple">Verify</button>
+        </div>
+
+        <div id="verifyOut" class="result-box"></div>
+      </section>
+    </div>
+  </main>
 
 	<script type="module">
 	import { enc, b64, ub64, genEcdsaKeyPair, ecdsaSign, ecdsaVerify, exportSpki, exportPkcs8, importSpki, importPkcs8, download } from './js/crypto-utils.js';

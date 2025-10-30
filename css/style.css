@@ -51,10 +51,10 @@ button {
 }
 
 
-.container4 {
+.container {
     width:100%;
 	min-height:100vh;
-	background-image:linear-gradient(rgba(240, 240, 240,0.9),rgba(0,8,51,0.9)),url(images/background1.gif);
+	background-image: url("../images/background.gif");
 	background-position:center;
 	background-size:cover;
     display:flex;

@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="style.css">
-	<link rel="stylesheet" href="style2.css">
-    <link rel="stylesheet" href="style3.css">
+	<link rel="stylesheet" href="css/style3.css"/>
+	<link rel="stylesheet" href="css/style.css"/>
     <title>Computer Parts API</title>
     <!-- Include Chart.js from CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -13,25 +12,24 @@
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
 <body>
-	<div class="container">
-    <nav>
-        <div class= "logo">
-            <p>Computer Parts API</p>
-        </div>
-        <ul>
-            <li><a href="index.html">Main Page</a></li>
-            <li><a href="ComputerComponentLIst.html">Computer Component List</a></li>
-            <li><a href="ChartForJason.html">Chart Bar chart</a></li>
-        </ul>
-    </nav>
-	</div>
-    <div class="filter-buttons">
-        <button onclick="filterData('CPU')">Filter CPU</button>
-        <button onclick="filterData('GPU')">Filter GPU</button>
-    </div>
+	  <nav>
+		<div class="logo">
+		  <a href="index.html">Computer Components API</a>
+		</div>
+		<ul>
+		  <li><a href="./secure-storage.html">Secure Storage</a></li>
+		  <li><a href="./sign-verify.html">Sign/Verify</a></li>
+		  <li><a href="ComputerComponentLIst.html">Computer Component List</a></li>
+		</ul>
+	  </nav>
+	  <main style="padding-top: 100px;">
+		<div class="filter-buttons">
+		  <button onclick="filterData('CPU')">Filter CPU</button>
+		  <button onclick="filterData('GPU')">Filter GPU</button>
+		</div>
 
-    <canvas id="barGraph" width="400" height="400"></canvas>
-
+		<canvas id="barGraph" width="400" height="400"></canvas>
+	  </main>
     <script>
         let originalData; // Store the original data
         let barGraph; // Store the chart instance
@@ -754,64 +752,80 @@
         barGraph = createBarGraph(labels, prices, quantities, specifications);
 
         // Function to create the Bar Graph
-        function createBarGraph(labels, prices, quantities, specifications) {
-            return new Chart(canvas, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Price',
-                            data: prices,
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Quantity',
-                            data: quantities,
-                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Specifications (Cores)',
-                            data: specifications,
-                            backgroundColor: 'rgba(255, 206, 86, 0.2)',
-                            borderColor: 'rgba(255, 206, 86, 1)',
-                            borderWidth: 1
-                        }
-                    ]
-                },
-                options: {
-                    scales: {
-                        x: {
-                            stacked: true,
-                            title: {
-                                display: true,
-                                text: 'Products'
-                            }
-                        },
-                        y: {
-                            stacked: true,
-                            title: {
-                                display: true,
-                                text: 'Values'
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            color: 'black', 
-                            labels: {
-                                color: 'black'
-                            }
-                        }
-                    }               
-                }
-            });
-        }
-
+		function createBarGraph(labels, prices, quantities, specifications) {
+			return new Chart(canvas, {
+				type: 'bar',
+				data: {
+					labels: labels,
+					datasets: [
+						{
+							label: 'Price',
+							data: prices,
+							backgroundColor: 'rgba(75, 192, 192, 0.3)',
+							borderColor: 'rgba(75, 192, 192, 1)',
+							borderWidth: 1
+						},
+						{
+							label: 'Quantity',
+							data: quantities,
+							backgroundColor: 'rgba(255, 99, 132, 0.3)',
+							borderColor: 'rgba(255, 99, 132, 1)',
+							borderWidth: 1
+						},
+						{
+							label: 'Specifications (Cores)',
+							data: specifications,
+							backgroundColor: 'rgba(255, 206, 86, 0.3)',
+							borderColor: 'rgba(255, 206, 86, 1)',
+							borderWidth: 1
+						}
+					]
+				},
+				options: {
+					scales: {
+						x: {
+							stacked: true,
+							title: {
+								display: true,
+								text: 'Products',
+								color: 'white' // ✅ axis title text color
+							},
+							ticks: {
+								color: 'white' // ✅ x-axis labels
+							},
+							grid: {
+								color: 'rgba(255,255,255,0.15)' // ✅ subtle white gridlines
+							}
+						},
+						y: {
+							stacked: true,
+							title: {
+								display: true,
+								text: 'Values',
+								color: 'white' // ✅ y-axis title
+							},
+							ticks: {
+								color: 'white' // ✅ y-axis numbers
+							},
+							grid: {
+								color: 'rgba(255,255,255,0.15)' // ✅ subtle gridlines
+							}
+						}
+					},
+					plugins: {
+						legend: {
+							labels: {
+								color: 'white' // ✅ legend text
+							}
+						},
+						title: {
+							display: false,
+							color: 'white'
+						}
+					}
+				}
+			});
+		}
         // Function to filter data based on type
         function filterData(type) {
             const filteredData = originalData.filter(entry => entry.type === type);
